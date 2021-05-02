@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.04.01.02
+// @version      2021.05.02.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -18,9 +18,13 @@
 /* global $ */
 /* global W */
 /* global WazeWrap */
+/* global getState */
 
 
 (function() {
+
+    var getState;
+
     function GetAbbreviation(state){
 
         if (!state) {
@@ -159,7 +163,7 @@
                     if (document.querySelector("#wz-dialog-container > div > wz-dialog") && document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu")) {
                         console.log("WME Road Shield Filter Ran")
                         let country = W.model.getTopCountry().name
-                        let state = W.model.getTopState().name
+                        let state = getState
                         if (country == "United States") {
                             console.log("WME Road Shield Filter Filtered " + W.model.getTopState().name)
                             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
@@ -190,11 +194,18 @@
         });
         observer.observe(document.getElementById('wz-dialog-container'), { childList: true });
     }
-
+    function gettingState() {
+        if (W.selectionManager.getSelectedFeatures().length > 0) {
+        let pStID = W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID;
+        getState = WazeWrap.Model.getStateName(pStID);
+        console.log("test");
+    }
+    }
 
     function bootstrap(tries = 1) {
         //log("bootstrap attempt "+ tries);
-        if (W && W.map && W.model) {
+        if (W && W.map && W.model && WazeWrap.Ready) {
+            WazeWrap.Events.register("selectionchanged", null, gettingState);
             letsWatch();
          } else if (tries < 1000) {
             setTimeout(() => bootstrap(tries++), 200);
