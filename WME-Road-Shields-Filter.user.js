@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.01.01
-// @description  Filters Road Shields
+// @version      2021.04.01.02
+// @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
 // @include      https://beta.waze.com/editor*
@@ -22,7 +22,11 @@
 
 (function() {
     function GetAbbreviation(state){
-        switch (name.toUpperCase())
+
+        if (!state) {
+            return;
+        }
+        switch (state.toUpperCase())
         {
             case "ALABAMA":
                 return "AL";
@@ -162,14 +166,14 @@
                                 let lineitem = document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > wz-menu-item:nth-child(`+j+`)`)
                                 let iTxt = lineitem.innerText // the string to check against
 
-                                let SearchStrings = ['Interstate Main','US Hwy','SR generic','CR generic','I-','US-','BIA','FSR',state,GetAbbreviation(state)]
+                                let SearchStrings = ['Interstate Main','US Hwy','SR generic','CR generic','I-','US-','BIA','FSR',state]
                                 let length = SearchStrings.length;
                                 lineitem.hidden = true;
                                 while(length--) {
                                     if (iTxt.indexOf(SearchStrings[length])!=-1) {
                                         console.log(iTxt.indexOf(SearchStrings[length]))
                                         console.log("WME Road Shield Filter Should Keep:" + iTxt)
-                                        if (state = "Virginia" && iTxt.includes("West Virginia")) {
+                                        if (state == "Virginia" && iTxt.includes("West Virginia")) {
                                             //skip
                                         }
                                         else {
