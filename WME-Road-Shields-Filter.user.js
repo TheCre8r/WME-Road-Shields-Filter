@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.06.01
+// @version      2021.05.07.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -154,7 +154,7 @@
     }
 
     function RegexMatch() {
-        let htmlstring = `<div style="position:absolute;top: 14px;right: 14px;font-size:20px;color:red;" id="WMERSFRM"><wz-button class="hydrated">Regex Match</wz-button></div>`
+        let htmlstring = `<div style="position:absolute;top: 14px;right: 14px;font-size:20px;" id="WMERSFRM"><wz-button class="hydrated">Regex Match</wz-button></div>`
         document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
         document.querySelector("#WMERSFRM").onclick = function(){
             let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
@@ -166,18 +166,28 @@
             let match = streetname.match(regex);
 
             console.log(match)
-            console.log(match[1])
 
-            //add a logic to make the screen red or something for stuff like NC-102 BYP and alert that that shield is not available
+            if (document.querySelector("#WMERSF-Error")) {
+                document.querySelector("#WMERSF-Error").remove()
+            }
+            function CreateError(text){
+                //add a logic to make the screen red or something for stuff like NC-102 BYP and alert that that shield is not available
+                let errorhtmlString = `<div style="position:absolute;top: 332px;left: 24px;font-size: 14px;color:red;" id="WMERSF-Error"><span>` + text + `</span></div>`;
+                document.querySelector("#WMERSFRM").insertAdjacentHTML('afterend',errorhtmlString)
 
-
+            }
+            if (streetname.match(/(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+/)) {
+                CreateError("Error 1");
+                return;
+            }
+            //console.log(match[1])
             switch (match[1] ) {
                 case "I":
                     console.log("Interstate");
                     switch (match[3] ) {
                         case "BUS":
                             console.log("Business");
-                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="I-# BUS]`).click()
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="I-# BUS"]`).click()
                             break;
                         default:
                             console.log("Main");
@@ -216,20 +226,20 @@
                     break;
             }
             if (match[2]) {
-                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").shadowRoot.querySelector("#id").value = match[2]
+                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
             }
             switch (match[4] ) {
                 case "N":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "North"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "North"
                     break;
                 case "E":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "East"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "East"
                     break;
                 case "S":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "South"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "South"
                     break;
                 case "W":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "West"
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "West"
                     break;
                 default:
                     console.log("Primary Identifier Not Found");
