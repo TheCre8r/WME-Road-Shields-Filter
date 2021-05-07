@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.07.01
+// @version      2021.05.07.02
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -176,7 +176,7 @@
                 document.querySelector("#WMERSFRM").insertAdjacentHTML('afterend',errorhtmlString)
 
             }
-            if (streetname.match(/(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+/)) {
+            if (streetname.match(/(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/)) {
                 CreateError("Error 1");
                 return;
             }
