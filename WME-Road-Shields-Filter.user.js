@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.02.01
+// @version      2021.05.06.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -153,6 +153,92 @@
         }
     }
 
+    function RegexMatch() {
+        let htmlstring = `<div style="position:absolute;top: 14px;right: 14px;font-size:20px;color:red;" id="WMERSFRM"><wz-button class="hydrated">Regex Match</wz-button></div>`
+        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
+        document.querySelector("#WMERSFRM").onclick = function(){
+            let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
+            //alert(streetname)
+            console.log(streetname)
+            //let streetname = 'US-421 S BYP';
+            //let streetname = 'US-421 S';
+            let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+)) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)? ?(N|E|S|W)?/;
+            let match = streetname.match(regex);
+
+            console.log(match)
+            console.log(match[1])
+
+            //add a logic to make the screen red or something for stuff like NC-102 BYP and alert that that shield is not available
+
+
+            switch (match[1] ) {
+                case "I":
+                    console.log("Interstate");
+                    switch (match[3] ) {
+                        case "BUS":
+                            console.log("Business");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="I-# BUS]`).click()
+                            break;
+                        default:
+                            console.log("Main");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="Interstate Main"]`).click()
+                            break;
+                    }
+                    break;
+                case "US":
+                    console.log("US");
+                    switch (match[3]) {
+                        case "BUS":
+                            console.log("Business");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# BUS"]`).click()
+                            break;
+                        case "BYP"://(BUS|ALT|BYP|CONN|SPUR|TRUCK)
+                            console.log("By-Pass");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# BYP"]`).click()
+                            break;
+                        case "ALT":
+                            console.log("Alternate");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US-# ALT"]`).click()
+                            break;
+                        default:
+                            console.log("Main");
+                            document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="US Hwy Main"]`).click()
+                            break;
+                    }
+                    break;
+                case "NC":
+                    console.log("NC");
+                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="North Carolina - State Main"]`).click()
+                    break;
+                default:
+                    console.log("Primary Identifier Not Found");
+                    //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
+                    break;
+            }
+            if (match[2]) {
+                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").shadowRoot.querySelector("#id").value = match[2]
+            }
+            switch (match[4] ) {
+                case "N":
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "North"
+                    break;
+                case "E":
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "East"
+                    break;
+                case "S":
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "South"
+                    break;
+                case "W":
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").shadowRoot.querySelector("#id").value = "West"
+                    break;
+                default:
+                    console.log("Primary Identifier Not Found");
+                    //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
+                    break;
+            }
+            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated").disabled = false
+        };
+    }
     function letsWatch() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
@@ -162,10 +248,11 @@
                     //log("Observer Running "+ $(addedNode).attr('class'));
                     if (document.querySelector("#wz-dialog-container > div > wz-dialog") && document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu")) {
                         console.log("WME Road Shield Filter Ran")
+                        RegexMatch()
                         let country = W.model.getTopCountry().name
                         let state = getState
                         if (country == "United States") {
-                            console.log("WME Road Shield Filter Filtered " + W.model.getTopState().name)
+                            console.log("WME Road Shield Filter Filtered " + state)
                             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
                                 let lineitem = document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > wz-menu-item:nth-child(`+j+`)`)
                                 let iTxt = lineitem.innerText // the string to check against
