@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.08.05
+// @version      2021.05.09.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -173,8 +173,12 @@
                 document.querySelector("#WMERSFRM").insertAdjacentHTML('afterend',errorhtmlString)
 
             }
+            if (streetname != match[0]) {
+                CreateError("Potential Error: Please Review");
+            }
             if (streetname.match(/(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/)) {
-                CreateError("Error 1");
+                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
+                CreateError("Error: Road does not need a shield");
                 return;
             }
             //console.log(match[1])
