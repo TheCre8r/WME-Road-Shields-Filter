@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.08.04
+// @version      2021.05.08.05
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -158,12 +158,8 @@
         document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content").insertAdjacentHTML('afterend',htmlstring)
         document.querySelector("#WMERSFRM").onclick = function(){
             let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
-            //alert(streetname)
             console.log(streetname)
-            //let streetname = 'US-421 S BYP';
-            //let streetname = 'US-421 S';
-            //let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+)) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)? ?(N|E|S|W)?/;
-            let regex = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:N|E|S|W|C)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+            let regex = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:[A-Z])?(?:-\d+)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
             let match = streetname.match(regex);
 
             console.log(match)
@@ -300,10 +296,9 @@
     }
     function gettingState() {
         if (W.selectionManager.getSelectedFeatures().length > 0) {
-        let pStID = W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID;
-        getState = WazeWrap.Model.getStateName(pStID);
-        console.log("test");
-    }
+            let pStID = W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID;
+            getState = WazeWrap.Model.getStateName(pStID);
+        }
     }
 
     function bootstrap(tries = 1) {
@@ -311,7 +306,7 @@
         if (W && W.map && W.model && WazeWrap.Ready) {
             WazeWrap.Events.register("selectionchanged", null, gettingState);
             letsWatch();
-         } else if (tries < 1000) {
+        } else if (tries < 1000) {
             setTimeout(() => bootstrap(tries++), 200);
         }
     }
