@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.08.01
+// @version      2021.05.08.02
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -163,7 +163,7 @@
             //let streetname = 'US-421 S BYP';
             //let streetname = 'US-421 S';
             //let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+)) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)? ?(N|E|S|W)?/;
-            let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+(?:|N|E|S|W))) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)?( (?:N|E|S|W))/;
+            let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+(?:|N|E|S|W))) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)?(?: (N|E|S|W))/;
             let match = streetname.match(regex);
 
             console.log(match)
@@ -243,6 +243,7 @@
                     document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "West"
                     break;
                 default:
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = ""
                     console.log("Primary Identifier Not Found");
                     //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
                     break;
