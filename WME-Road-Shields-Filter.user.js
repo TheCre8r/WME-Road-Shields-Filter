@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.08.03
+// @version      2021.05.08.04
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -163,7 +163,7 @@
             //let streetname = 'US-421 S BYP';
             //let streetname = 'US-421 S';
             //let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+)) ?(BUS|ALT|BYP|CONN|SPUR|TRUCK)? ?(N|E|S|W)?/;
-            let regex = /(?:(I|(?:[A-Z]\w)(?=\-))-(\d+(?:N|E|S|W)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+            let regex = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:N|E|S|W|C)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
             let match = streetname.match(regex);
 
             console.log(match)
@@ -183,6 +183,7 @@
             }
             //console.log(match[1])
             switch (match[1] ) {
+                case "H":
                 case "I":
                     console.log("Interstate");
                     switch (match[3] ) {
@@ -227,7 +228,11 @@
                     break;
             }
             if (match[2]) {
-                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
+                if (match[1] == "H") {
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[1]+'-'+match[2]
+                } else {
+                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
+                }
             }
             switch (match[4] ) {
                 case "N":
