@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.09.02
+// @version      2021.05.09.03
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -25,131 +25,74 @@
 
     var getState;
 
-    function GetAbbreviation(state){
+    function abbrState(input, to){
+        var states = [
+            ['Arizona', 'AZ'],
+            ['Alabama', 'AL'],
+            ['Alaska', 'AK'],
+            ['Arkansas', 'AR'],
+            ['California', 'CA'],
+            ['Colorado', 'CO'],
+            ['Connecticut', 'CT'],
+            ['Delaware', 'DE'],
+            ['Florida', 'FL'],
+            ['Georgia', 'GA'],
+            ['Hawaii', 'HI'],
+            ['Idaho', 'ID'],
+            ['Illinois', 'IL'],
+            ['Indiana', 'IN'],
+            ['Iowa', 'IA'],
+            ['Kansas', 'KS'],
+            ['Kentucky', 'KY'],
+            ['Louisiana', 'LA'],
+            ['Maine', 'ME'],
+            ['Maryland', 'MD'],
+            ['Massachusetts', 'MA'],
+            ['Michigan', 'MI'],
+            ['Minnesota', 'MN'],
+            ['Mississippi', 'MS'],
+            ['Missouri', 'MO'],
+            ['Montana', 'MT'],
+            ['Nebraska', 'NE'],
+            ['Nevada', 'NV'],
+            ['New Hampshire', 'NH'],
+            ['New Jersey', 'NJ'],
+            ['New Mexico', 'NM'],
+            ['New York', 'NY'],
+            ['North Carolina', 'NC'],
+            ['North Dakota', 'ND'],
+            ['Ohio', 'OH'],
+            ['Oklahoma', 'OK'],
+            ['Oregon', 'OR'],
+            ['Pennsylvania', 'PA'],
+            ['Rhode Island', 'RI'],
+            ['South Carolina', 'SC'],
+            ['South Dakota', 'SD'],
+            ['Tennessee', 'TN'],
+            ['Texas', 'TX'],
+            ['Utah', 'UT'],
+            ['Vermont', 'VT'],
+            ['Virginia', 'VA'],
+            ['Washington', 'WA'],
+            ['West Virginia', 'WV'],
+            ['Wisconsin', 'WI'],
+            ['Wyoming', 'WY'],
+        ];
 
-        if (!state) {
-            return;
-        }
-        switch (state.toUpperCase())
-        {
-            case "ALABAMA":
-                return "AL";
-            case "ALASKA":
-                return "AK";
-            case "AMERICAN SAMOA":
-                return "AS";
-            case "ARIZONA":
-                return "AZ";
-            case "ARKANSAS":
-                return "AR";
-            case "CALIFORNIA":
-                return "CA";
-            case "COLORADO":
-                return "CO";
-            case "CONNECTICUT":
-                return "CT";
-            case "DELAWARE":
-                return "DE";
-            case "DISTRICT OF COLUMBIA":
-                return "DC";
-            case "FEDERATED STATES OF MICRONESIA":
-                return "FM";
-            case "FLORIDA":
-                return "FL";
-            case "GEORGIA":
-                return "GA";
-            case "GUAM":
-                return "GU";
-            case "HAWAII":
-                return "HI";
-            case "IDAHO":
-                return "ID";
-            case "ILLINOIS":
-                return "IL";
-            case "INDIANA":
-                return "IN";
-            case "IOWA":
-                return "IA";
-            case "KANSAS":
-                return "KS";
-            case "KENTUCKY":
-                return "KY";
-            case "LOUISIANA":
-                return "LA";
-            case "MAINE":
-                return "ME";
-            case "MARSHALL ISLANDS":
-                return "MH";
-            case "MARYLAND":
-                return "MD";
-            case "MASSACHUSETTS":
-                return "MA";
-            case "MICHIGAN":
-                return "MI";
-            case "MINNESOTA":
-                return "MN";
-            case "MISSISSIPPI":
-                return "MS";
-            case "MISSOURI":
-                return "MO";
-            case "MONTANA":
-                return "MT";
-            case "NEBRASKA":
-                return "NE";
-            case "NEVADA":
-                return "NV";
-            case "NEW HAMPSHIRE":
-                return "NH";
-            case "NEW JERSEY":
-                return "NJ";
-            case "NEW MEXICO":
-                return "NM";
-            case "NEW YORK":
-                return "NY";
-            case "NORTH CAROLINA":
-                return "NC";
-            case "NORTH DAKOTA":
-                return "ND";
-            case "NORTHERN MARIANA ISLANDS":
-                return "MP";
-            case "OHIO":
-                return "OH";
-            case "OKLAHOMA":
-                return "OK";
-            case "OREGON":
-                return "OR";
-            case "PALAU":
-                return "PW";
-            case "PENNSYLVANIA":
-                return "PA";
-            case "PUERTO RICO":
-                return "PR";
-            case "RHODE ISLAND":
-                return "RI";
-            case "SOUTH CAROLINA":
-                return "SC";
-            case "SOUTH DAKOTA":
-                return "SD";
-            case "TENNESSEE":
-                return "TN";
-            case "TEXAS":
-                return "TX";
-            case "UTAH":
-                return "UT";
-            case "VERMONT":
-                return "VT";
-            case "VIRGIN ISLANDS":
-                return "VI";
-            case "VIRGINIA":
-                return "VA";
-            case "WASHINGTON":
-                return "WA";
-            case "WEST VIRGINIA":
-                return "WV";
-            case "WISCONSIN":
-                return "WI";
-            case "WYOMING":
-                return "WY";
+        if (to == 'abbr'){
+            input = input.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+            for(let i = 0; i < states.length; i++){
+                if(states[i][0] == input){
+                    return(states[i][1]);
+                }
+            }
+        } else if (to == 'name'){
+            input = input.toUpperCase();
+            for(let i = 0; i < states.length; i++){
+                if(states[i][1] == input){
+                    return(states[i][0]);
+                }
+            }
         }
     }
 
@@ -217,13 +160,22 @@
                             break;
                     }
                     break;
-                case "NC":
-                    console.log("NC");
-                    document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="North Carolina - State Main"]`).click()
-                    break;
                 default:
-                    console.log("Primary Identifier Not Found");
-                    //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
+                    if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="`+abbrState(match[1], 'name')+` - State Main"]`) && match[3] == undefined) {
+                        console.log(match[1]);
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="`+abbrState(match[1], 'name')+` - State Main"]`).click()
+                    } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="`+abbrState(match[1], 'name')+` - State ` + match[3] + `"]`)) {
+                        document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="`+abbrState(match[1], 'name')+` - State ` + match[3] + `"]`).click()
+                    } else if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="`+abbrState(match[1], 'name')+` - State Main"]`) && match[3] !== undefined) {
+                        CreateError("Error: " + abbrState(match[1], 'name')+" - State Main Road Shield is not available" );
+                        console.log(match[1]);
+                        console.log(match[3]);
+                        return;
+                    } else {
+                        console.log("Primary Identifier Not Found");
+                        return;
+                        //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
+                    }
                     break;
             }
             if (match[2]) {
