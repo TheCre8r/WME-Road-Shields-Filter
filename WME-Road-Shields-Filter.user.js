@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.12.01
+// @version      2021.05.13.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -146,31 +146,33 @@
                     MakeStateShield(match)
                     break;
             }
-            if (match[2]) {
-                if (match[1] == "H") {
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[1]+'-'+match[2]
-                } else {
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
+            if (!document.querySelector(`#WMERSF-Error`)){
+                if (match[2]) {
+                    if (match[1] == "H") {
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[1]+'-'+match[2]
+                    } else {
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(2) > wz-text-input").value = match[2]
+                    }
                 }
+                switch (match[4] ) {
+                    case "N":
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "North"
+                        break;
+                    case "E":
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "East"
+                        break;
+                    case "S":
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "South"
+                        break;
+                    case "W":
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "West"
+                        break;
+                    default:
+                        document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = ""
+                        break;
+                }
+                document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated").disabled = false
             }
-            switch (match[4] ) {
-                case "N":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "North"
-                    break;
-                case "E":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "East"
-                    break;
-                case "S":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "South"
-                    break;
-                case "W":
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = "West"
-                    break;
-                default:
-                    document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(3) > wz-text-input").value = ""
-                    break;
-            }
-            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.apply-button.hydrated").disabled = false
         };
     }
     function filterShields() {
