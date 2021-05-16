@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.13.02
+// @version      2021.05.15.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -50,6 +50,7 @@
             let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
             console.log(streetname)
             let regex = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:[A-Z])?(?:-\d+)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
+            let SRStates = ['Pennsylvania', 'Illinois', 'Alabama', 'Washington'];
             let match = streetname.match(regex);
 
             console.log(match)
@@ -111,9 +112,16 @@
                             break;
                     }
                     break;
+                case "SH":
+                    if (getState() == "Texas") {
+                        MakeStateShield(match,getState());
+                    }
+                    break;
                 case "SR":
-                    if (getState() == "Pennsylvania") {
-                        MakeStateShield(match,"Pennsylvania");
+                    if (SRStates.indexOf(getState())>= 0) {
+                        MakeStateShield(match,getState());
+                    } else if (getState() == "North Carolina") {
+                        CreateError("Error: " + getState() + " does not use road shields for Secondary Routes")
                     } else if (match[3] == undefined) {
                         console.log(match[1]);
                         document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
