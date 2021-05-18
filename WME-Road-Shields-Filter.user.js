@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.17.01
+// @version      2021.05.17.02
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -42,13 +42,15 @@
                 tab_title: `${SCRIPT_NAME}`,
                 report_an_issue: 'Report an Issue on GitHub',
                 help: 'Help',
-                filter_by_state: `Filter Shields By State`
+                filter_by_state: `Filter Shields By State`,
+                settings_1: 'Enable Debug Mode',
             },
             es: {
                 tab_title: `${SCRIPT_NAME}`,
                 report_an_issue: 'Reportar Un Problema En GitHub',
                 help: 'Ayuda',
-                filter_by_state: `Filtros de Escudos Por Estado`
+                filter_by_state: `Filtros de Escudos Por Estado`,
+                settings_1: 'Habilitar el modo de Limpiar',
             }
         };
         translations['en-GB'] = translations['en-US'] = translations['en-AU'] = translations.en;
@@ -231,9 +233,11 @@
             }
         };
     }
-    function filterShields() {
+    function filterShields(state) {
         let country = W.model.getTopCountry().name
-        let state = getState()
+        if (!state) {
+            let state = getState()
+            }
         if (country == "Canada" || country == "United States") {
             console.log("WME Road Shield Filter Filtered " + state)
             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
@@ -272,6 +276,16 @@
                         if (_settings.FilterByState) {
                             filterShields()
                         }
+                        if (_settings.Debug) {
+                            document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask" style=""></i>`)
+                            document.querySelector("#RSF_Test").onclick = function(){
+                                var state = prompt("Please enter state name", "");
+                                console.log(state)
+                                if (state !== null) {
+                                    filterShields(state)
+                                }
+                            };
+                        }
                     }
                 }
             });
@@ -294,6 +308,9 @@
     }
 
     function initTab() {
+        function UserTest() {
+            return (TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSF-Debug" value="on"><label for="WMERSF-Debug">${I18n.t(`wmersf.settings_1`)}</label></div>` : '');
+        }
         let $section = $("<div>");
         $section.html([
             '<div>',
@@ -306,6 +323,7 @@
                         '<div class="controls-container">',
                             `<input type="checkbox" id="WMERSF-FilterByState" value="on"><label for="WMERSF-FilterByState">${I18n.t(`wmersf.filter_by_state`)}</label>`,
                         '</div>',
+                        UserTest(),
                     '</div>',
                     '<div class="form-group">',
                         '<div class="WMERSF-report">',
