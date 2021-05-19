@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.17.02
+// @version      2021.05.18.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -263,7 +263,7 @@
             }
         }
     }
-    function letsWatch() {
+    function RSObserver() {
         let observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
@@ -293,6 +293,36 @@
         observer.observe(document.getElementById('wz-dialog-container'), { childList: true });
     }
 
+    function RegexMatch2() {
+        let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSFTIORM"><wz-button class="hydrated">Regex Match</wz-button></div>`
+        document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
+        document.querySelector("#WMERSFTIORM").onclick = function(){
+            alert("Please tell me. What were you expecting?")
+            window.open("https://i.giphy.com/media/CLrEXbY34xfPi/giphy.webp", '_blank');
+            let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
+            let regex = /(Exit )(\d+):/
+            let match = exittext.match(regex);
+            console.log(match)
+        };
+    }
+    function PanelObserver() {
+        let observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    let addedNode = mutation.addedNodes[i];
+                    // Only fire up if it's a node
+                    //log("Observer Running "+ $(addedNode).attr('class'));
+                    if (document.querySelector("#panel-container > div > div") && document.querySelector("#panel-container > div > div").classList.contains("turn-instructions-panel")) {
+                        log("Panel Observer")
+                        RegexMatch2()
+                    }
+                }
+            });
+        });
+        observer.observe(document.querySelector("#panel-container"), { childList: true });
+    }
+
+
     function getState() {
         if (W.selectionManager.getSelectedFeatures().length > 0) {
             let pStID = W.selectionManager._getSelectedSegments()[0].attributes.primaryStreetID;
@@ -314,32 +344,32 @@
         let $section = $("<div>");
         $section.html([
             '<div>',
-                '<div id="WMERSF-header">',
-                    `<span id="WMERSF-title">${I18n.t(`wmersf.tab_title`)}</span>`,
-                    `<span id="WMERSF-version">${SCRIPT_VERSION}</span>`,
-                '</div>',
-                '<form class="attributes-form side-panel-section">',
-                    '<div class="form-group">',
-                        '<div class="controls-container">',
-                            `<input type="checkbox" id="WMERSF-FilterByState" value="on"><label for="WMERSF-FilterByState">${I18n.t(`wmersf.filter_by_state`)}</label>`,
-                        '</div>',
-                        UserTest(),
-                    '</div>',
-                    '<div class="form-group">',
-                        '<div class="WMERSF-report">',
-                            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
-                            '<div style="display: inline-block;">',
-                                `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`,
-                            '</div>',
-                        '</div>',
-                        `<div class="WMERSF-help" style="text-align: center;padding-top: 5px;">`,
-                            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
-                            `<div style="display: inline-block;">`,
-                                `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/wiki" id="WMERSF-help-link">${I18n.t(`wmersf.help`)}</a>`,
-                            `</div>`,
-                        `</div>`,
-                    '</div>',
-                '</form>',
+            '<div id="WMERSF-header">',
+            `<span id="WMERSF-title">${I18n.t(`wmersf.tab_title`)}</span>`,
+            `<span id="WMERSF-version">${SCRIPT_VERSION}</span>`,
+            '</div>',
+            '<form class="attributes-form side-panel-section">',
+            '<div class="form-group">',
+            '<div class="controls-container">',
+            `<input type="checkbox" id="WMERSF-FilterByState" value="on"><label for="WMERSF-FilterByState">${I18n.t(`wmersf.filter_by_state`)}</label>`,
+            '</div>',
+            UserTest(),
+            '</div>',
+            '<div class="form-group">',
+            '<div class="WMERSF-report">',
+            '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
+            '<div style="display: inline-block;">',
+            `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`,
+            '</div>',
+            '</div>',
+            `<div class="WMERSF-help" style="text-align: center;padding-top: 5px;">`,
+            `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
+            `<div style="display: inline-block;">`,
+            `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/wiki" id="WMERSF-help-link">${I18n.t(`wmersf.help`)}</a>`,
+            `</div>`,
+            `</div>`,
+            '</div>',
+            '</form>',
             '</div>'
         ].join(' '));
         new WazeWrap.Interface.Tab('WMERSF', $section.html(), function(){log("Tab Loaded")});
@@ -429,7 +459,8 @@
             injectCss();
             initTab();
             initializeSettings();
-            letsWatch();
+            RSObserver();
+            PanelObserver();
         } else if (tries < 1000) {
             setTimeout(() => bootstrap(tries++), 200);
         }
