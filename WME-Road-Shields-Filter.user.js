@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.19.01
+// @version      2021.05.19.02
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -187,7 +187,7 @@
                     break;
                 case "SR":
                     if (DoneStates.indexOf(State) == -1 ) {
-                        CreateAlert(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`)
+                        CreateAlert(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="https://github.com/TheCre8r/WME-Road-Shields-Filter/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`)
                     }
                     if (SRStates.indexOf(State)>= 0) {
                         MakeStateShield(match,State);
@@ -256,9 +256,6 @@
     }
     function filterShields(state) {
         let country = W.model.getTopCountry().name
-        if (!state) {
-            let state = getState()
-            }
         if (country == "Canada" || country == "United States") {
             console.log("WME Road Shield Filter Filtered " + state)
             for(var j = 1; j <= document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu").childElementCount; j++){
@@ -295,7 +292,7 @@
                         console.log("WME Road Shield Filter Ran")
                         RegexMatch()
                         if (_settings.FilterByState) {
-                            filterShields()
+                            filterShields(getState())
                         }
                         if (_settings.Debug) {
                             document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-label").insertAdjacentHTML("beforeend", ` <i id="RSF_Test" class="fas fa-flask" style=""></i>`)
@@ -379,13 +376,13 @@
             '<div class="WMERSF-report">',
             '<i class="fa fa-github" style="font-size: 13px; padding-right:5px"></i>',
             '<div style="display: inline-block;">',
-            `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`,
+            `<a target="_blank" href="https://github.com/TheCre8r/WME-Road-Shields-Filter/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`,
             '</div>',
             '</div>',
             `<div class="WMERSF-help" style="text-align: center;padding-top: 5px;">`,
             `<i class="fa fa-question-circle-o" style="font-size: 13px; padding-right:5px"></i>`,
             `<div style="display: inline-block;">`,
-            `<a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/wiki" id="WMERSF-help-link">${I18n.t(`wmersf.help`)}</a>`,
+            `<a target="_blank" href="https://github.com/TheCre8r/WME-Road-Shields-Filter/wiki" id="WMERSF-help-link">${I18n.t(`wmersf.help`)}</a>`,
             `</div>`,
             `</div>`,
             '</div>',
@@ -415,7 +412,7 @@
             '.far,.fas{font-family:"Font Awesome 5 Free"}',
             '.fas{font-weight:900}',
         ].join(' ');
-        $('<style type="text/css" id="wmebed-style">' + css + '</style>').appendTo('head');
+        $('<style type="text/css" id="wmersf-style">' + css + '</style>').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/regular.css" integrity="sha384-APzfePYec2VC7jyJSpgbPrqGZ365g49SgeW+7abV1GaUnDwW7dQIYFc+EuAuIx0c" crossorigin="anonymous">').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/brands.css" integrity="sha384-/feuykTegPRR7MxelAQ+2VUMibQwKyO6okSsWiblZAJhUSTF9QAVR0QLk6YwNURa" crossorigin="anonymous">').appendTo('head');
         $('<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/fontawesome.css" integrity="sha384-ijEtygNrZDKunAWYDdV3wAZWvTHSrGhdUfImfngIba35nhQ03lSNgfTJAKaGFjk2" crossorigin="anonymous">').appendTo('head');
