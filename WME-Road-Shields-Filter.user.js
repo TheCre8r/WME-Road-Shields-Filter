@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.18.01
+// @version      2021.05.19.01
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -108,12 +108,29 @@
             if (document.querySelector("#WMERSF-Error")) {
                 document.querySelector("#WMERSF-Error").remove()
             }
+
+            if (document.querySelector("#WMERSF-Alert")) {
+                document.querySelector("#WMERSF-Alert").remove()
+            }
+
             function CreateError(text){
+                if (document.querySelector("#WMERSF-Alert")) {
+                    document.querySelector("#WMERSF-Alert").remove()
+                }
                 //add a logic to make the screen red or something for stuff like NC-102 BYP and alert that that shield is not available
-                let errorhtmlString = `<div style="position:absolute;top: 332px;left: 24px;font-size: 14px;color:red;" id="WMERSF-Error"><span>` + text + `</span></div>`;
+                let errorhtmlString = `<div style="position:absolute;top: 323px;left: 24px;font-size: 14px;color:red;" id="WMERSF-Error"><span>` + text + `</span></div>`;
                 document.querySelector("#WMERSFRM").insertAdjacentHTML('afterend',errorhtmlString)
 
             }
+
+            function CreateAlert(text){
+                if (!document.querySelector("#WMERSF-Error")) {
+                    //add a logic to make the screen red or something for stuff like NC-102 BYP and alert that that shield is not available
+                    let alerthtmlString = `<div style="position:absolute;top: 323px;left: 24px;font-size: 14px;color:orange;" id="WMERSF-Alert"><span>` + text + `</span></div>`;
+                    document.querySelector("#WMERSFRM").insertAdjacentHTML('afterend',alerthtmlString)
+                }
+            }
+
             if (streetname.match(/(?=to)\w+|(?=Rd)\w+|(?=St)\w+|(?=Ave)\w+|(?=Dr)\w+|(?=Old)\w+/)) {
                 document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-controls > wz-button.remove-road-shield.hydrated").click()
                 CreateError("Error: Road does not need a shield");
@@ -130,7 +147,6 @@
                 } else {
                     State = abbrState(match[1], 'name')
                 }
-
                 if (document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State Main"]`) && match[3] == undefined) {
                     console.log(match[1]);
                     document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="` + State + ` - State Main"]`).click()
@@ -147,6 +163,8 @@
                     //document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`)
                 }
             }
+            let State = getState()
+            let DoneStates = ["North Carolina"].concat(SRStates);
             switch (match[1] ) {
                 case "H":
                 case "I":
@@ -163,15 +181,18 @@
                     }
                     break;
                 case "SH":
-                    if (getState() == "Texas") {
-                        MakeStateShield(match,getState());
+                    if (State == "Texas") {
+                        MakeStateShield(match,State);
                     }
                     break;
                 case "SR":
-                    if (SRStates.indexOf(getState())>= 0) {
-                        MakeStateShield(match,getState());
-                    } else if (getState() == "North Carolina") {
-                        CreateError("Error: " + getState() + " does not use road shields for Secondary Routes")
+                    if (DoneStates.indexOf(State) == -1 ) {
+                        CreateAlert(`Warning: State Shield Not Verified.<br>Consult local guidance and <a target="_blank" href="https://github.com/TheCre8r/WME-BackEnd-Data/issues/new" id="WMERSF-report-an-issue">${I18n.t(`wmersf.report_an_issue`)}</a>`)
+                    }
+                    if (SRStates.indexOf(State)>= 0) {
+                        MakeStateShield(match,State);
+                    } else if (State == "North Carolina") {
+                        CreateError("Error: " + State + " does not use road shields for Secondary Routes")
                     } else if (match[3] == undefined) {
                         console.log(match[1]);
                         document.querySelector(`#wz-dialog-container > div > wz-dialog > wz-dialog-content > div:nth-child(1) > wz-menu > [title="SR generic Main"]`).click()
@@ -294,16 +315,18 @@
     }
 
     function RegexMatch2() {
-        let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSFTIORM"><wz-button class="hydrated">Regex Match</wz-button></div>`
-        document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
-        document.querySelector("#WMERSFTIORM").onclick = function(){
-            alert("Please tell me. What were you expecting?")
-            window.open("https://i.giphy.com/media/CLrEXbY34xfPi/giphy.webp", '_blank');
-            let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
-            let regex = /(Exit )(\d+):/
-            let match = exittext.match(regex);
-            console.log(match)
-        };
+        if (TESTERS.indexOf(W.loginManager.user.userName) > -1) {
+            let htmlstring = `<div style="position:absolute;top: 6px;right: 20px;font-size:20px;transform: scale(0.65);" id="WMERSFTIORM"><wz-button class="hydrated">Regex Match</wz-button></div>`
+            document.querySelector("#panel-container > div > div > div.panel-header").insertAdjacentHTML('afterend',htmlstring)
+            document.querySelector("#WMERSFTIORM").onclick = function(){
+                alert("Please tell me. What were you expecting?")
+                window.open("https://i.giphy.com/media/CLrEXbY34xfPi/giphy.webp", '_blank');
+                let exittext = document.querySelector("#panel-container > div > div > div.panel-content > div:nth-child(1) > div > div > div > span > span > input[type=text]").value
+                let regex = /(Exit )(\d+):/
+                let match = exittext.match(regex);
+                console.log(match)
+            };
+        }
     }
     function PanelObserver() {
         let observer = new MutationObserver(mutations => {
@@ -338,9 +361,6 @@
     }
 
     function initTab() {
-        function UserTest() {
-            return (TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSF-Debug" value="on"><label for="WMERSF-Debug">${I18n.t(`wmersf.settings_1`)}</label></div>` : '');
-        }
         let $section = $("<div>");
         $section.html([
             '<div>',
@@ -353,7 +373,7 @@
             '<div class="controls-container">',
             `<input type="checkbox" id="WMERSF-FilterByState" value="on"><label for="WMERSF-FilterByState">${I18n.t(`wmersf.filter_by_state`)}</label>`,
             '</div>',
-            UserTest(),
+            TESTERS.indexOf(W.loginManager.user.userName) > -1 ? `<div class="controls-container"><input type="checkbox" id="WMERSF-Debug" value="on"><label for="WMERSF-Debug">${I18n.t(`wmersf.settings_1`)}</label></div>` : '',
             '</div>',
             '<div class="form-group">',
             '<div class="WMERSF-report">',
