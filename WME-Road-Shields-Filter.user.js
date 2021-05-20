@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME Road Shield Filter
 // @namespace    https://github.com/thecre8r/
-// @version      2021.05.19.02
+// @version      2021.05.19.03
 // @description  Observes for the modal
 // @include      https://www.waze.com/editor*
 // @include      https://www.waze.com/*/editor*
@@ -100,7 +100,7 @@
             let streetname = document.querySelector("#wz-dialog-container > div > wz-dialog > wz-dialog-header > div.street-name").innerText
             console.log(streetname)
             let regex = /(?:(H|I|(?:[A-Z]\w)(?=\-))-(\d+(?:[A-Z])?(?:-\d+)?))?(?: (BUS|ALT|BYP|CONN|SPUR|TRUCK))?(?: (N|E|S|W))?/;
-            let SRStates = ['Pennsylvania', 'Illinois', 'Alabama', 'Washington'];
+            let SRStates = ['Arizona','Pennsylvania', 'Illinois', 'Alabama', 'Washington'];
             let match = streetname.match(regex);
 
             console.log(match)
